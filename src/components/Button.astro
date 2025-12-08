@@ -9,10 +9,9 @@ interface Props {
   supportedLangs: Language[]
 }
 
-const {
-  light: { background: lightMode },
-  dark: { background: darkMode },
-} = themeConfig.color
+const { light, dark } = themeConfig.color
+const lightMode = light.background
+const darkMode = dark.background
 
 const { supportedLangs } = Astro.props
 const currentPath = Astro.url.pathname

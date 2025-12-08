@@ -603,13 +603,237 @@ const emRecent = (await getEMPosts()).slice(0, 5)
 </Layout>
 ```
 
-### Step 10: Create RSS Feeds for Both Sections
+### Step 10: Update Page Detection Utilities
 
-**Files**: 
-- `src/pages/[...lang]/drknss-rss.xml.ts`
+**File**: `src/utils/page.ts`
+
+Add detection functions for the new sections:
+
+```typescript
+// Add these new functions
+export function isDRKNSSPage(path: string) {
+  return matchPageType(path, 'drknss')
+}
+
+export function isEMPage(path: string) {
+  return matchPageType(path, 'em')
+}
+
+export function isDRKNSSTagPage(path: string) {
+  return matchPageType(path, 'drknss-tags')
+}
+
+export function isEMTagPage(path: string) {
+  return matchPageType(path, 'em-tags')
+}
+
+// Update getPageInfo to include new page types
+export function getPageInfo(path: string) {
+  const currentLang = getLangFromPath(path)
+  const isHome = isHomePage(path)
+  const isPost = isPostPage(path)  // Keep for backward compatibility
+  const isDRKNSS = isDRKNSSPage(path)
+  const isEM = isEMPage(path)
+  const isTag = isTagPage(path)  // Keep for backward compatibility
+  const isDRKNSSTag = isDRKNSSTagPage(path)
+  const isEMTag = isEMTagPage(path)
+  const isAbout = isAboutPage(path)
+
+  return {
+    currentLang,
+    isHome,
+    isPost,  // Deprecated: use isDRKNSS or isEM
+    isDRKNSS,
+    isEM,
+    isTag,  // Deprecated: use isDRKNSSTag or isEMTag
+    isDRKNSSTag,
+    isEMTag,
+    isAbout,
+    getLocalizedPath: (targetPath: string) =>
+      getLocalizedPath(targetPath, currentLang),
+  }
+}
+```
+
+### Step 11: Update Description Utilities
+
+**File**: `src/utils/description.ts`
+
+Update to handle both DRKNSS and EM collections:
+
+```typescript
+import type { CollectionEntry } from 'astro:content'
+
+// Update function signature to accept both collection types
+export function getPostDescription(
+  post: CollectionEntry<'drknss'> | CollectionEntry<'em'>,
+  scene: ExcerptScene,
+): string {
+  // Rest of the function remains the same
+  const lang = (post.data.lang || defaultLocale) as Language
+  // ... existing code
+}
+```
+
+### Step 12: Update Feed Generation Utilities
+
+**File**: `src/utils/feed.ts`
+
+Create separate feed generators for each collection:
+
+```typescript
+// Update image glob to include both collections
+const imagesGlob = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/content/{drknss,em}/_images/**/*.{jpeg,jpg,png,gif,webp}',
+)
+
+// Update getAbsoluteImageUrl to handle both collection paths
+async function _getAbsoluteImageUrl(srcPath: string, baseUrl: string, collection: 'drknss' | 'em') {
+  const prefixRemoved = srcPath.replace(/^(?:\.\.\/)+|^\.\//, '')
+  const absolutePath = `/src/content/${collection}/${prefixRemoved}`
+  const imageImporter = imagesGlob[absolutePath]
+  // ... rest of function
+}
+
+// Create separate feed generators
+export async function generateDRKNSSFeed({ lang }: { lang?: Language } = {}) {
+  const currentUI = ui[lang as keyof typeof ui] ?? ui[defaultLocale as keyof typeof ui] ?? {}
+  const siteURL = lang ? `${url}${base}/${lang}/` : `${url}${base}/`
+
+  const feed = new Feed({
+    title: `${i18nTitle ? currentUI.title : title} - DRKNSS`,
+    description: i18nTitle ? currentUI.description : description,
+    id: `${siteURL}drknss/`,
+    link: `${siteURL}drknss/`,
+    // ... rest of feed config
+  })
+
+  // Get DRKNSS posts
+  const posts = await getCollection(
+    'drknss',
+    ({ data }: { data: CollectionEntry<'drknss'>['data'] }) => {
+      const isNotDraft = !data.draft
+      const isCorrectLang = data.lang === lang
+        || data.lang === ''
+        || (lang === undefined && data.lang === defaultLocale)
+      return isNotDraft && isCorrectLang
+    },
+  )
+
+  // ... process posts and add to feed
+  return feed
+}
+
+export async function generateEMFeed({ lang }: { lang?: Language } = {}) {
+  // Similar to generateDRKNSSFeed but for EM collection
+  const currentUI = ui[lang as keyof typeof ui] ?? ui[defaultLocale as keyof typeof ui] ?? {}
+  const siteURL = lang ? `${url}${base}/${lang}/` : `${url}${base}/`
+
+  const feed = new Feed({
+    title: `${i18nTitle ? currentUI.title : title} - EM`,
+    description: i18nTitle ? currentUI.description : description,
+    id: `${siteURL}em/`,
+    link: `${siteURL}em/`,
+    // ... rest of feed config
+  })
+
+  // Get EM posts
+  const posts = await getCollection(
+    'em',
+    ({ data }: { data: CollectionEntry<'em'>['data'] }) => {
+      const isNotDraft = !data.draft
+      const isCorrectLang = data.lang === lang
+        || data.lang === ''
+        || (lang === undefined && data.lang === defaultLocale)
+      return isNotDraft && isCorrectLang
+    },
+  )
+
+  // ... process posts and add to feed
+  return feed
+}
+
+// Create RSS generators for each collection
+export async function generateDRKNSSRSS(context: APIContext) {
+  const feed = await generateDRKNSSFeed({
+    lang: context.params?.lang as Language | undefined,
+  })
+  // ... generate RSS XML
+}
+
+export async function generateEMRSS(context: APIContext) {
+  const feed = await generateEMFeed({
+    lang: context.params?.lang as Language | undefined,
+  })
+  // ... generate RSS XML
+}
+
+// Similar for Atom feeds
+export async function generateDRKNSSAtom(context: APIContext) { /* ... */ }
+export async function generateEMAtom(context: APIContext) { /* ... */ }
+```
+
+### Step 13: Update Cache Utilities (if needed)
+
+**File**: `src/utils/cache.ts`
+
+The memoization function doesn't need changes - it's generic and will work with the new utility functions automatically. However, you may want to add collection-specific cache clearing if needed:
+
+```typescript
+// Optional: Add cache management functions
+const cacheStores = {
+  drknss: new Map<string, any>(),
+  em: new Map<string, any>(),
+}
+
+export function clearCollectionCache(collection: 'drknss' | 'em') {
+  cacheStores[collection].clear()
+}
+
+export function clearAllCaches() {
+  Object.values(cacheStores).forEach(cache => cache.clear())
+}
+```
+
+### Step 14: Create RSS/Atom Feed Pages
+
+**File**: `src/pages/[...lang]/drknss-rss.xml.ts`
+
+```typescript
+import type { APIContext } from 'astro'
+import { generateDRKNSSRSS } from '@/utils/feed'
+
+export async function GET(context: APIContext) {
+  return generateDRKNSSRSS(context)
+}
+
+export function getStaticPaths() {
+  return allLocales.map(lang => ({
+    params: { lang: getLangRouteParam(lang) }
+  }))
+}
+```
+
+**File**: `src/pages/[...lang]/drknss-atom.xml.ts`
+
+```typescript
+import type { APIContext } from 'astro'
+import { generateDRKNSSAtom } from '@/utils/feed'
+
+export async function GET(context: APIContext) {
+  return generateDRKNSSAtom(context)
+}
+
+export function getStaticPaths() {
+  return allLocales.map(lang => ({
+    params: { lang: getLangRouteParam(lang) }
+  }))
+}
+```
+
+Create similar files for EM collection:
 - `src/pages/[...lang]/em-rss.xml.ts`
-
-Copy from existing RSS feed and modify collection references.
+- `src/pages/[...lang]/em-atom.xml.ts`
 
 ### Summary of Changes
 
@@ -621,7 +845,11 @@ Copy from existing RSS feed and modify collection references.
 6. ✅ Created separate tag systems
 7. ✅ Added i18n strings for new sections
 8. ✅ Updated homepage to feature both sections
-9. ✅ Created separate RSS feeds
+9. ✅ **Updated `page.ts` with new page detection functions**
+10. ✅ **Updated `description.ts` to handle both collections**
+11. ✅ **Updated `feed.ts` with collection-specific feed generators**
+12. ✅ **Added optional cache management in `cache.ts`**
+13. ✅ Created separate RSS/Atom feeds for each collection
 
 ### Testing Checklist
 

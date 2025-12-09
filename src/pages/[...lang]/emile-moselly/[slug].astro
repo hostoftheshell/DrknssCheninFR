@@ -10,11 +10,11 @@ import TOC from '@/components/Widgets/TOC.astro'
 import { allLocales } from '@/config'
 import { getLangFromLocale, getLangRouteParam } from '@/i18n/lang'
 import Layout from '@/layouts/Layout.astro'
-import { checkPostSlugDuplication } from '@/utils/content'
 import { getPostDescription } from '@/utils/description'
+import { checkPostSlugDuplication } from '@/utils/emileMoselly'
 
 export async function getStaticPaths() {
-  const posts: CollectionEntry<'posts'>[] = await getCollection('posts')
+  const posts: CollectionEntry<'emileMoselly'>[] = await getCollection('emileMoselly')
 
   // Check if there are duplicate post slugs
   const duplicates = await checkPostSlugDuplication(posts)
@@ -69,7 +69,7 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-  post: CollectionEntry<'posts'>
+  post: CollectionEntry<'emileMoselly'>
   supportedLangs: Language[]
 }
 

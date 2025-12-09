@@ -4,7 +4,7 @@ import TagList from '@/components/TagList.astro'
 import { allLocales } from '@/config'
 import { getLangFromLocale, getLangRouteParam } from '@/i18n/lang'
 import Layout from '@/layouts/Layout.astro'
-import { getAllTags, getPostsByTag, getTagSupportedLangs } from '@/utils/content'
+import { getAllTags, getPostsByTag, getTagSupportedLangs } from '@/utils/darkness'
 
 export async function getStaticPaths() {
   const paths = await Promise.all(allLocales.map(async (lang) => {

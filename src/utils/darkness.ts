@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content'
 import type { Language } from '@/i18n/config'
-import type { Post } from '@/types'
+import type { darknessPost } from '@/types'
 import { getCollection, render } from 'astro:content'
 import { defaultLocale } from '@/config'
 import { memoize } from '@/utils/cache'
@@ -13,7 +13,7 @@ const metaCache = new Map<string, { minutes: number }>()
  * @param post The post to enhance with metadata
  * @returns Enhanced post with reading time information
  */
-async function addMetaToPost(post: CollectionEntry<'posts'>): Promise<Post> {
+async function addMetaToPost(post: CollectionEntry<'darkness'>): Promise<darknessPost> {
   const cacheKey = `${post.id}-${post.data.lang || 'universal'}`
   const cachedMeta = metaCache.get(cacheKey)
   if (cachedMeta) {
@@ -39,7 +39,7 @@ async function addMetaToPost(post: CollectionEntry<'posts'>): Promise<Post> {
  * @param posts Array of blog posts to check
  * @returns Array of descriptive error messages for duplicate slugs
  */
-export async function checkPostSlugDuplication(posts: CollectionEntry<'posts'>[]): Promise<string[]> {
+export async function checkPostSlugDuplication(posts: CollectionEntry<'darkness'>[]): Promise<string[]> {
   const slugMap = new Map<string, Set<string>>()
   const duplicates: string[] = []
 
@@ -79,8 +79,8 @@ async function _getPosts(lang?: Language) {
   const currentLang = lang || defaultLocale
 
   const filteredPosts = await getCollection(
-    'posts',
-    ({ data }: CollectionEntry<'posts'>) => {
+    'darkness',
+    ({ data }: CollectionEntry<'darkness'>) => {
       // Show drafts in dev mode only
       const shouldInclude = import.meta.env.DEV || !data.draft
       return shouldInclude && (data.lang === currentLang || data.lang === '')
@@ -115,14 +115,14 @@ export const getRegularPosts = memoize(_getRegularPosts)
  * @param lang The language code to filter by, defaults to site's default language
  * @returns Pinned posts sorted by pin value in descending order
  */
-async function _getPinnedPosts(lang?: Language) {
+async function _getPinnedDarknessPosts(lang?: Language) {
   const posts = await getPosts(lang)
   return posts
     .filter(post => post.data.pin && post.data.pin > 0)
     .sort((a, b) => (b.data.pin ?? 0) - (a.data.pin ?? 0))
 }
 
-export const getPinnedPosts = memoize(_getPinnedPosts)
+export const getPinnedDarknessPosts = memoize(_getPinnedDarknessPosts)
 
 /**
  * Group posts by year and sort within each year
@@ -130,11 +130,11 @@ export const getPinnedPosts = memoize(_getPinnedPosts)
  * @param lang The language code to filter by, defaults to site's default language
  * @returns Map of posts grouped by year (descending), sorted by date within each year
  */
-async function _getPostsByYear(lang?: Language): Promise<Map<number, Post[]>> {
+async function _getDarknessPostsByYear(lang?: Language): Promise<Map<number, darknessPost[]>> {
   const posts = await getRegularPosts(lang)
-  const yearMap = new Map<number, Post[]>()
+  const yearMap = new Map<number, darknessPost[]>()
 
-  posts.forEach((post: Post) => {
+  posts.forEach((post: darknessPost) => {
     const year = post.data.published.getFullYear()
     let yearPosts = yearMap.get(year)
     if (!yearPosts) {
@@ -156,7 +156,7 @@ async function _getPostsByYear(lang?: Language): Promise<Map<number, Post[]>> {
   return new Map([...yearMap.entries()].sort((a, b) => b[0] - a[0]))
 }
 
-export const getPostsByYear = memoize(_getPostsByYear)
+export const getDarknessPostsByYear = memoize(_getDarknessPostsByYear)
 
 /**
  * Group posts by their tags
@@ -166,9 +166,9 @@ export const getPostsByYear = memoize(_getPostsByYear)
  */
 async function _getPostsGroupByTags(lang?: Language) {
   const posts = await getPosts(lang)
-  const tagMap = new Map<string, Post[]>()
+  const tagMap = new Map<string, darknessPost[]>()
 
-  posts.forEach((post: Post) => {
+  posts.forEach((post: darknessPost) => {
     post.data.tags?.forEach((tag: string) => {
       let tagPosts = tagMap.get(tag)
       if (!tagPosts) {
@@ -222,7 +222,7 @@ export const getPostsByTag = memoize(_getPostsByTag)
  */
 async function _getTagSupportedLangs(tag: string): Promise<Language[]> {
   const posts = await getCollection(
-    'posts',
+    'darkness',
     ({ data }) => !data.draft,
   )
   const { allLocales } = await import('@/config')

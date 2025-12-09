@@ -1,7 +1,13 @@
 import type { CollectionEntry } from 'astro:content'
 import type { Language } from '@/i18n/config'
 
-export type Post = CollectionEntry<'posts'> & {
+export type darknessPost = CollectionEntry<'darkness'> & {
+  remarkPluginFrontmatter: {
+    minutes: number
+  }
+}
+
+export type emileMoselyPost = CollectionEntry<'emileMoselly'> & {
   remarkPluginFrontmatter: {
     minutes: number
   }

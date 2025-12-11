@@ -8,13 +8,13 @@ export const themeConfig: ThemeConfig = {
     // site subtitle
     subtitle: 'La nuit au coin d\'une table',
     // site description
-    description: 'Retypeset is a static blog theme based on the Astro framework. Inspired by Typography, Retypeset establishes a new visual standard and reimagines the layout of all pages, creating a reading experience reminiscent of paper books, reviving the beauty of typography. Details in every sight, elegance in every space.',
+    description: 'Parler de la légèreté de l\'âme et des gravités du cœur.',
     // use i18n title/subtitle/description from src/i18n/ui.ts instead of static ones above
     i18nTitle: true, // true | false
     // author name
-    author: 'radishzz',
+    author: 'JFChenin',
     // site url
-    url: 'https://retypeset.radishzz.cc',
+    url: 'https://darkness.chenin.fr',
     // base path
     // root directory for all pages and assets
     base: '/', // e.g., '/blog', '/docs'
@@ -49,7 +49,6 @@ export const themeConfig: ThemeConfig = {
         about: 'oklch(0.817 0.0819 146.35 / 0.3)',
       },
     },
-    // #f9a579 #88bfd3 #c3a3d8 #a1d2a4 #d2e4fc #c5b4b0
     dark: {
       // primary color
       primary: 'oklch(92% 0.005 298)',
@@ -84,7 +83,7 @@ export const themeConfig: ThemeConfig = {
     // enable table of contents
     toc: true, // true | false
     // enable katex math rendering
-    katex: true, // true | false
+    katex: false, // true | false
     // reduce motion
     reduceMotion: false, // true | false
   },
@@ -182,11 +181,11 @@ export const themeConfig: ThemeConfig = {
       },
       {
         name: 'GitHub',
-        url: 'https://github.com/radishzzz/astro-theme-retypeset',
+        url: 'https://github.com/jfchenin/darkness',
       },
       {
         name: 'Email',
-        url: 'email@radishzz.cc',
+        url: 'jfrançois@chenin.fr',
       },
       // {
       //   name: 'X',

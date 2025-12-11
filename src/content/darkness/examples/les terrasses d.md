@@ -1,5 +1,5 @@
 ---
-title: Les Terrasses ...
+title: Les Terrasses
 published: 2005-01-12
 tags:
   - littérature

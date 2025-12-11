@@ -1,83 +1,93 @@
 ---
-import { ui } from '@/i18n/ui'
-import { getPageInfo } from '@/utils/page'
-import themeConfig from '@/config'
+import themeConfig from "@/config";
+import { getPageInfo } from "@/utils/page";
+import { ui } from "@/i18n/ui";
 
-const { currentLang, isHome, isDarkness, isEmileMoselly, isTag, isAbout, getLocalizedPath } = getPageInfo(Astro.url.pathname)
-const currentUI = ui[currentLang as keyof typeof ui] ?? {}
+const {
+  currentLang,
+  isHome,
+  isDarkness,
+  isEmileMoselly,
+  isTag,
+  isAbout,
+  getLocalizedPath,
+} = getPageInfo(Astro.url.pathname);
+const currentUI = ui[currentLang as keyof typeof ui] ?? {};
 
-const isDarknessActive = isDarkness
-const isEmileMosellyActive = isEmileMoselly
-const isHomeActive = isHome
-const isTagActive = isTag
-const isAboutActive = isAbout
+const isDarknessActive = isDarkness;
+const isEmileMosellyActive = isEmileMoselly;
+const isHomeActive = isHome;
+const isTagActive = isTag;
+const isAboutActive = isAbout;
 
 function getNavItemClass(isActive: boolean, colorClass: string) {
-  const base = 'after:bottom-0.7em transition-[colors,font-weight]'
+  const base = "after:bottom-0.7em transition-[colors,font-weight]";
 
   return isActive
     ? `${base} font-bold highlight-static ${colorClass}`
-    : `${base} highlight-hover hover:(font-bold ${colorClass})`
+    : `${base} highlight-hover hover:(font-bold ${colorClass})`;
 }
 
 const navItems = [
   {
-    href: '/',
+    href: "/",
     label: currentUI.home,
     active: isHomeActive,
-    colorClass: 'c-primary',
+    colorClass: "c-primary",
     highlightColor: themeConfig.color.light.highlights.home,
   },
   {
-    href: '/darkness/',
+    href: "/darkness/",
     label: currentUI.darkness,
     active: isDarknessActive,
-    colorClass: 'c-primary',
+    colorClass: "c-primary",
     highlightColor: themeConfig.color.light.highlights.darkness,
   },
   {
-    href: '/emile-moselly/',
+    href: "/emile-moselly/",
     label: currentUI.emileMoselly,
     active: isEmileMosellyActive,
-    colorClass: 'c-primary',
+    colorClass: "c-primary",
     highlightColor: themeConfig.color.light.highlights.emileMoselly,
   },
   {
-    href: '/tags/',
+    href: "/tags/",
     label: currentUI.tags,
     active: isTagActive,
-    colorClass: 'c-primary',
+    colorClass: "c-primary",
     highlightColor: themeConfig.color.light.highlights.tags,
   },
   {
-    href: '/about/',
+    href: "/about/",
     label: currentUI.about,
     active: isAboutActive,
-    colorClass: 'c-primary',
+    colorClass: "c-primary",
     highlightColor: themeConfig.color.light.highlights.about,
   },
-]
+];
 ---
 
 <nav
   aria-label="Site Navigation"
   class:list={[
-    'mb-10.5 text-3.6 font-semibold leading-2.45em font-navbar',
-    'lg:(uno-desktop-column text-4 bottom-[min(9.04rem+3.85vw,12.5rem)]) cjk:tracking-wide',
-    isDarkness || isEmileMoselly ? 'hidden lg:block' : '',
+    "mb-10.5 text-3.6 font-semibold leading-2.45em font-navbar",
+    "lg:(uno-desktop-column text-4 bottom-[min(9.04rem+3.85vw,12.5rem)]) cjk:tracking-wide",
+    isDarkness || isEmileMoselly ? "hidden lg:block" : "",
   ]}
 >
   <ul>
-    {navItems.map(item => (
-      <li>
-        <a
-          href={getLocalizedPath(item.href)}
-          class={getNavItemClass(item.active, item.colorClass)}
-          style={`--highlight-color: ${item.highlightColor}`}
-        >
-          {item.label}
-        </a>
-      </li>
-    ))}
+    {
+      navItems.map((item) => (
+        <li>
+          <a
+            href={getLocalizedPath(item.href)}
+            class={getNavItemClass(item.active, item.colorClass)}
+            style={`--highlight-color: ${item.highlightColor}`}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))
+    }
   </ul>
 </nav>

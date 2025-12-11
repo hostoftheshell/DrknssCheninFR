@@ -3,6 +3,9 @@ import { OGImageRoute } from 'astro-og-canvas'
 import { getCollection } from 'astro:content'
 import { getPostDescription } from '@/utils/description'
 
+const notoSansBoldPath = new URL('../../public/fonts/NotoSansSC-Bold.otf', import.meta.url).pathname
+const notoSansRegularPath = new URL('../../public/fonts/NotoSansSC-Regular.otf', import.meta.url).pathname
+const logoPngPath = new URL('../../public/icons/og-logo.png', import.meta.url).pathname
 // eslint-disable-next-line antfu/no-top-level-await
 const [darknessPosts, emileMosellyPosts] = await Promise.all([
   getCollection('darkness'),
@@ -28,7 +31,7 @@ export const { getStaticPaths, GET } = OGImageRoute({
     title: page.title,
     description: page.description,
     logo: {
-      path: './icons/og-logo.png', // Required local path and PNG format
+      path: logoPngPath, // Required local path and PNG format
       size: [250],
     },
     border: {
@@ -49,8 +52,8 @@ export const { getStaticPaths, GET } = OGImageRoute({
       },
     },
     fonts: [
-      '/fonts/NotoSansSC-Bold.otf',
-      '/fonts/NotoSansSC-Regular.otf',
+      notoSansBoldPath,
+      notoSansRegularPath,
     ],
     bgGradient: [[242, 241, 245]],
   }),

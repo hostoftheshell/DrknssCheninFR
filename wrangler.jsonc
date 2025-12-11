@@ -1,20 +1,17 @@
 {
-	"main": "dist/_worker.js/index.js",
-	"name": "darkness",
+  "main": "dist/_worker.js/index.js",
+  "name": "darkness",
   "compatibility_date": "2025-12-11",
   "route": {
-      "pattern": "darkness.chenin.fr/*",
-      "zone_name": "darkness.chenin.fr.org"
-    },
-  "compatibility_flags": [
-    "nodejs_compat",
-    "global_fetch_strictly_public"
-  ],
-	"assets": {
-		"binding": "ASSETS",
-		"directory": "./dist"
-	},
-	"observability": {
+    "pattern": "darkness.chenin.fr/*",
+    "zone_name": "darkness.chenin.fr.org"
+  },
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
     "enabled": true
   }
 }

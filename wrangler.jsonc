@@ -4,7 +4,7 @@
   "compatibility_date": "2025-12-11",
   "route": {
     "pattern": "darkness.chenin.fr/*",
-    "zone_name": "darkness.chenin.fr.org"
+    "zone_name": "darkness.chenin.fr"
   },
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {

@@ -6,7 +6,7 @@
   "repository": "https://github.com/radishzzz/astro-theme-retypeset",
   "scripts": {
     "dev": "astro check && astro dev",
-    "build": "astro check && astro build && pnpm apply-lqip",
+    "build": "astro check && astro build && pnpm apply-lqip && wrangler deploy",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint .",
@@ -66,7 +66,8 @@
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "unocss": "66.5.10",
-    "unocss-preset-theme": "^0.14.1"
+    "unocss-preset-theme": "^0.14.1",
+    "wrangler": "^4.54.0"
   },
   "pnpm": {
     "patchedDependencies": {
@@ -76,6 +77,9 @@
       "esbuild",
       "sharp",
       "simple-git-hooks"
+    ],
+    "ignoredBuiltDependencies": [
+      "workerd"
     ]
   },
   "simple-git-hooks": {
